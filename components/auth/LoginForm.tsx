@@ -1,7 +1,9 @@
 "use client";
 
 import { useLoginMutation } from "@/src/redux/features/authApi/authApi";
+import Cookies from "js-cookie";
 import { Loader2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,9 +31,15 @@ export default function LoginForm() {
       if (response?.success) {
         localStorage.setItem("access_token", response?.data?.token);
         localStorage.setItem("role", response?.data?.user?.role);
+        Cookies.set("access_token", response?.data?.token);
+        Cookies.set("role", response?.data?.user?.role);
         toast.success(response?.message);
         reset();
-        router.push("/dashboard");
+        if (response?.data?.user?.role === "STUDENT") {
+          router.push("/student/dashboard");
+        } else {
+          router.push("/admin/dashboard");
+        }
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -106,6 +114,10 @@ export default function LoginForm() {
           "Sign In"
         )}
       </button>
+
+      <div>
+        New to DevReview?? <Link href="/register">Register</Link>
+      </div>
     </form>
   );
 }

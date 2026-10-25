@@ -5,8 +5,8 @@ const rawBaseQuery = fetchBaseQuery({
   credentials: "same-origin",
   prepareHeaders: (headers) => {
     if (typeof window !== "undefined") {
-      const token = localStorage?.getItem("access_token");
-      if (token) headers.set("Authorization", `Bearer ${token}`);
+      const token = localStorage.getItem("access_token");
+      if (token) headers.set("authorization", `Bearer ${token}`);
     }
     return headers;
   },
@@ -25,7 +25,7 @@ const baseQueryWithAutoTokenUpdate = async (
 const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithAutoTokenUpdate,
-  tagTypes: ["User"],
+  tagTypes: ["Submissions"],
   endpoints: () => ({}),
 });
 
