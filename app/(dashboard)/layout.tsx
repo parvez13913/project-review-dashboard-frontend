@@ -5,6 +5,15 @@ import Cookies from "js-cookie";
 import { LogOut, ShieldCheck, UserCheck } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSyncExternalStore } from "react";
+
+const subscribeToRole = (callback: () => void) => {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+};
+
+const getRoleSnapshot = () => localStorage.getItem("role");
+const getServerRoleSnapshot = () => null;
 
 export default function DashboardLayout({
   children,
@@ -12,13 +21,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const role = localStorage.getItem("role");
+  const role = useSyncExternalStore(
+    subscribeToRole,
+    getRoleSnapshot,
+    getServerRoleSnapshot,
+  );
 
   const handleLogout = () => {
     Cookies.remove("access_token");
     Cookies.remove("role");
+
     localStorage.removeItem("access_token");
     localStorage.removeItem("role");
+
     router.push("/login");
   };
 
@@ -29,10 +44,11 @@ export default function DashboardLayout({
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Brand Logo & Role Indicator */}
           <div className="flex items-center space-x-3">
-            <Link href="/" className="flex items-center space-x-2 ">
+            <Link href="/" className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-violet-600 flex items-center justify-center font-bold text-lg shadow-lg shadow-violet-600/30">
                 P
               </div>
+
               <span className="font-semibold text-lg tracking-tight">
                 DevReview<span className="text-violet-500">.</span>
               </span>
@@ -41,11 +57,13 @@ export default function DashboardLayout({
             <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-violet-950/60 border border-violet-800/60 text-violet-400 uppercase tracking-wider">
               {role === "ADMIN" ? (
                 <>
-                  <ShieldCheck className="w-3.5 h-3.5" /> Admin Panel
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  Admin Panel
                 </>
               ) : (
                 <>
-                  <UserCheck className="w-3.5 h-3.5" /> Student Portal
+                  <UserCheck className="w-3.5 h-3.5" />
+                  Student Portal
                 </>
               )}
             </span>
