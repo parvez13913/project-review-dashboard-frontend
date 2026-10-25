@@ -26,6 +26,7 @@ const authSlice = createSlice({
         document.cookie =
           "userType=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; samesite=strict;";
 
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.href = "/login";
       }
     },
